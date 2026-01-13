@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Fetch website content
-      run: curl -is "https://tanzu-staging.academy" -o last-modified-staging.txt | grep "last-modified"
+      run: curl -is "https://tanzu-staging.academy" | grep "last-modified" | sed s/"last-modified"/"staging"/ > last-modified-staging.txt
 
     - name: Compare with previous run and cache
       id: cache
