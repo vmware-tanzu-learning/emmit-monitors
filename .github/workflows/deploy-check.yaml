@@ -24,7 +24,7 @@ jobs:
 
     - name: Notify if data has changed (example using email)
       # This step only runs if there was not a cache hit (meaning the content changed)
-      if: steps.cache-staging.outputs.cache-hit != 'true'
+      if: steps.cache.outputs.cache-hit != 'true'
       # You would replace this with your preferred notification method (e.g., Slack webhook, email action)
       run: |
         echo "Deployment has happened $(cat last-modified-staging.txt)"
@@ -45,7 +45,7 @@ jobs:
 
     - name: Notify if data has changed (example using email)
       # This step only runs if there was not a cache hit (meaning the content changed)
-      if: steps.cache-production.outputs.cache-hit != 'true'
+      if: steps.cache.outputs.cache-hit != 'true'
       # You would replace this with your preferred notification method (e.g., Slack webhook, email action)
       run: |
         echo "Deployment has happened $(cat last-modified-production.txt)"
