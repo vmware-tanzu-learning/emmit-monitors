@@ -1,4 +1,6 @@
-name: Check site deployment
+name: emmit-deployment-check-staging
+run-name: App has remained unchanged
+concurrency: emmit-deployment-check-staging
 
 on:
   workflow_dispatch:
@@ -8,6 +10,7 @@ on:
 
 jobs:
   check:
+    environment: staging
     runs-on: ubuntu-latest
     steps:
     - name: Fetch website content
