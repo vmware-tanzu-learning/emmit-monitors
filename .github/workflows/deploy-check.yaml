@@ -18,21 +18,28 @@ jobs:
         curl -s "https://tanzu-staging.academy" > index.html
         cat index.html
 
-    - name: Compare with previous run and cache
-      id: cache
-      uses: actions/cache@v5
+    - name: See if this site content was previously seen
+      id: restore
+      uses: actions/restore@v5
       with:
         path: index.html
         key: emmit-deployment-check-staging-${{ hashFiles('index.html') }}
-        fail-on-cache-miss: true
+
+    - name: Save this version regardless
+      id: save
+      uses: actions/save@v5
+      with:
+        path: index.html
+        key: emmit-deployment-check-staging-${{ hashFiles('index.html') }}
 
     - name: Notify if data has changed (example using email)
       # This step only runs if there was not a cache hit (meaning the content changed)
-      if: steps.cache.outputs.cache-hit != ''
+      if: steps.save.outputs.cache-hit != 'true'
       # You would replace this with your preferred notification method (e.g., Slack webhook, email action)
       run: |
         echo "Deployment has happened $(curl -s -I -w '%header{last-modified}' https://tanzu-staging.academy -o /dev/null)"
         exit 1
+
   check-production:
     environment: production
     runs-on: ubuntu-latest
@@ -42,17 +49,23 @@ jobs:
         curl -s "https://tanzu.academy" > index.html
         cat index.html
 
-    - name: Compare with previous run and cache
-      id: cache
-      uses: actions/cache@v5
+    - name: See if this site content was previously seen
+      id: restore
+      uses: actions/restore@v5
       with:
         path: index.html
-        key: emmit-deployment-check-production-${{ hashFiles('index.html') }}
-        fail-on-cache-miss: true
+        key: emmit-deployment-check-staging-${{ hashFiles('index.html') }}
+
+    - name: Save this version regardless
+      id: save
+      uses: actions/save@v5
+      with:
+        path: index.html
+        key: emmit-deployment-check-staging-${{ hashFiles('index.html') }}
 
     - name: Notify if data has changed (example using email)
       # This step only runs if there was not a cache hit (meaning the content changed)
-      if: steps.cache.outputs.cache-hit != ''
+      if: steps.restore.outputs.cache-hit != ''
       # You would replace this with your preferred notification method (e.g., Slack webhook, email action)
       run: |
         echo "Deployment has happened $(curl -s -I -w '%header{last-modified}' https://tanzu.academy -o /dev/null)"
