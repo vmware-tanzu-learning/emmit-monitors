@@ -54,14 +54,14 @@ jobs:
       uses: actions/cache/restore@v4
       with:
         path: index.html
-        key: emmit-deployment-check-staging-${{ hashFiles('index.html') }}
+        key: emmit-deployment-check-production-${{ hashFiles('index.html') }}
 
     - name: Save this version regardless
       id: save
       uses: actions/cache/save@v4
       with:
         path: index.html
-        key: emmit-deployment-check-staging-${{ hashFiles('index.html') }}
+        key: emmit-deployment-check-production-${{ hashFiles('index.html') }}
 
     - name: Notify if data has changed (example using email)
       # This step only runs if there was not a cache hit (meaning the content changed)
