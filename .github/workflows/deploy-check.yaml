@@ -15,22 +15,22 @@ jobs:
     steps:
     - name: Fetch website content
       run: |
-        curl -s "https://tanzu-staging.academy" > index.html
-        cat index.html
+        curl -si "https://tanzu-staging.academy" | grep last-modified > last-modified.txt
+        cat last-modified.txt
 
     - name: See if this site content was previously seen
       id: restore
       uses: actions/cache/restore@v4
       with:
-        path: index.html
-        key: emmit-deployment-check-staging-${{ hashFiles('index.html') }}
+        path: last-modified.txt
+        key: emmit-deployment-check-staging-${{ hashFiles('last-modified.txt') }}
 
     - name: Save this version regardless
       id: save
       uses: actions/cache/save@v4
       with:
         path: index.html
-        key: emmit-deployment-check-staging-${{ hashFiles('index.html') }}
+        key: emmit-deployment-check-staging-${{ hashFiles('last-modified.txt') }}
 
     - name: Notify if data has changed (example using email)
       # This step only runs if there was not a cache hit (meaning the content changed)
@@ -46,22 +46,22 @@ jobs:
     steps:
     - name: Fetch website content
       run: |
-        curl -s "https://tanzu.academy" > index.html
-        cat index.html
+        curl -si "https://tanzu.academy" | grep last-modified > last-modified.txt
+        cat last-modified.txt
 
     - name: See if this site content was previously seen
       id: restore
       uses: actions/cache/restore@v4
       with:
         path: index.html
-        key: emmit-deployment-check-production-${{ hashFiles('index.html') }}
+        key: emmit-deployment-check-production-${{ hashFiles('last-modified.txt') }}
 
     - name: Save this version regardless
       id: save
       uses: actions/cache/save@v4
       with:
         path: index.html
-        key: emmit-deployment-check-production-${{ hashFiles('index.html') }}
+        key: emmit-deployment-check-production-${{ hashFiles('last-modified.txt') }}
 
     - name: Notify if data has changed (example using email)
       # This step only runs if there was not a cache hit (meaning the content changed)
