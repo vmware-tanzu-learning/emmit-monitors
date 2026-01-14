@@ -3,6 +3,7 @@ run-name: App has remained unchanged
 concurrency: emmit-deployment-check
 
 on:
+  workflow_dispatch:
   schedule:
     # Every 5 minutes
     - cron: "*/5 * * * *"
@@ -23,10 +24,11 @@ jobs:
       with:
         path: index.html
         key: emmit-deployment-check-staging-${{ hashFiles('index.html') }}
+        fail-on-cache-miss: true
 
     - name: Notify if data has changed (example using email)
       # This step only runs if there was not a cache hit (meaning the content changed)
-      if: steps.cache.outputs.cache-hit != 'true'
+      if: steps.cache.outputs.cache-hit != ''
       # You would replace this with your preferred notification method (e.g., Slack webhook, email action)
       run: |
         echo "Deployment has happened $(curl -s -I -w '%header{last-modified}' https://tanzu-staging.academy -o /dev/null)"
@@ -46,10 +48,11 @@ jobs:
       with:
         path: index.html
         key: emmit-deployment-check-production-${{ hashFiles('index.html') }}
+        fail-on-cache-miss: true
 
     - name: Notify if data has changed (example using email)
       # This step only runs if there was not a cache hit (meaning the content changed)
-      if: steps.cache.outputs.cache-hit != 'true'
+      if: steps.cache.outputs.cache-hit != ''
       # You would replace this with your preferred notification method (e.g., Slack webhook, email action)
       run: |
         echo "Deployment has happened $(curl -s -I -w '%header{last-modified}' https://tanzu.academy -o /dev/null)"
