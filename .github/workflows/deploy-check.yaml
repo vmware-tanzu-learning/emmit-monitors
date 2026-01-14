@@ -62,7 +62,7 @@ jobs:
       id: save
       uses: actions/cache/save@v4
       with:
-        path: index.html
+        path: last-modified.txt
         key: emmit-deployment-check-production-${{ hashFiles('last-modified.txt') }}
 
     - name: Notify if data has changed (example using email)
