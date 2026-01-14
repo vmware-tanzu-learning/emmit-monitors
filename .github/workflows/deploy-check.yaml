@@ -20,14 +20,14 @@ jobs:
 
     - name: See if this site content was previously seen
       id: restore
-      uses: actions/restore@v5
+      uses: actions/restore@v4
       with:
         path: index.html
         key: emmit-deployment-check-staging-${{ hashFiles('index.html') }}
 
     - name: Save this version regardless
       id: save
-      uses: actions/save@v5
+      uses: actions/save@v4
       with:
         path: index.html
         key: emmit-deployment-check-staging-${{ hashFiles('index.html') }}
@@ -51,14 +51,14 @@ jobs:
 
     - name: See if this site content was previously seen
       id: restore
-      uses: actions/restore@v5
+      uses: actions/restore@v4
       with:
         path: index.html
         key: emmit-deployment-check-staging-${{ hashFiles('index.html') }}
 
     - name: Save this version regardless
       id: save
-      uses: actions/save@v5
+      uses: actions/save@v4
       with:
         path: index.html
         key: emmit-deployment-check-staging-${{ hashFiles('index.html') }}
