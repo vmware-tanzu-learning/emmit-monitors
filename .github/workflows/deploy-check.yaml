@@ -3,7 +3,6 @@ run-name: App has remained unchanged
 concurrency: emmit-deployment-check
 
 on:
-  workflow_dispatch:
   schedule:
     # Every 5 minutes
     - cron: "*/5 * * * *"
