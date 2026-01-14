@@ -24,6 +24,7 @@ jobs:
       with:
         path: last-modified.txt
         key: emmit-deployment-check-staging-${{ hashFiles('last-modified.txt') }}
+        lookup-only: true
 
     - name: Save this version regardless
       id: save
@@ -55,6 +56,7 @@ jobs:
       with:
         path: last-modified.txt
         key: emmit-deployment-check-production-${{ hashFiles('last-modified.txt') }}
+        lookup-only: true
 
     - name: Save this version regardless
       id: save
