@@ -1,0 +1,66 @@
+name: emmit-api-fingerprint
+run-name: API response structure has remained unchanged
+concurrency: emmit-api-fingerprint
+
+on:
+  schedule:
+    # Every 5 minutes
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  fingerprint:
+    strategy:
+      fail-fast: false
+      matrix:
+        site: [tanzu-staging.academy, tanzu.academy]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Fingerprint the frontend API response
+      # Reduce the JSON to a sorted set of "path:type" lines. Values are dropped, array
+      # indices collapse to [], and nulls are ignored, so content edits do not register but
+      # renamed fields, type changes, and new or removed structure do.
+      run: |
+        curl -fsS "https://${{ matrix.site }}/api/services/courses/list?tenantId=tanzu" \
+          | jq -r '
+              [ paths as $p
+                | getpath($p) as $v
+                | select($v != null)
+                | ($p | map(if type == "number" then "[]" else . end) | join(".")) + ":" + ($v | type)
+              ] | unique | .[]' > current.txt
+        test -s current.txt
+        wc -l current.txt
+
+    - name: Restore the last known fingerprint
+      uses: actions/cache/restore@v4
+      with:
+        path: baseline.txt
+        # Never matches exactly; restore-keys picks up the most recently saved baseline.
+        key: emmit-api-fingerprint-${{ matrix.site }}-${{ github.run_id }}
+        restore-keys: emmit-api-fingerprint-${{ matrix.site }}-
+
+    - name: Compare with the last known fingerprint
+      id: compare
+      run: |
+        if [ ! -f baseline.txt ]; then
+          echo "No baseline yet for ${{ matrix.site }}; recording this one."
+          echo "save=true" >> "$GITHUB_OUTPUT"
+        elif ! diff -u baseline.txt current.txt > fingerprint.diff; then
+          echo "API response structure for ${{ matrix.site }} has changed:"
+          cat fingerprint.diff
+          echo "save=true" >> "$GITHUB_OUTPUT"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+        fi
+        cp current.txt baseline.txt
+
+    - name: Save the new fingerprint
+      if: steps.compare.outputs.save == 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: baseline.txt
+        key: emmit-api-fingerprint-${{ matrix.site }}-${{ github.run_id }}
+
+    - name: Notify if the structure has changed
+      # Failing the job is the notification, matching deploy-check.yaml.
+      if: steps.compare.outputs.changed == 'true'
+      run: exit 1
